@@ -1,0 +1,249 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>RVS (Salary Slip)</title>
+
+  <!--Boostrap 4.0.0 CSS-->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+<style>
+   .progress-bar {
+  width: 100%;
+  height: 20px;
+  background-color: #f3f3f3;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.progress-bar.completed {
+  background-color: #28a745;
+}
+
+.progress-bar::before {
+  content: '';
+  display: block;
+  width: 0;
+  height: 100%;
+  background-color: #007bff;
+  transition: width 0.3s ease-in-out;
+}
+  </style>  
+  <!--Font Awesome Icons-->
+  <script defer src="https://use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
+  <link rel="stylesheet" type="text/css" href="css/style.css" />
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+
+<body class="bg-teal-700">
+
+  {{!-- <header>
+      <h1>RVS Media</h1>
+    </header> --}}
+
+  <form method="post" action="/"  enctype="multipart/form-data">
+    <div
+      class="max-w-xl m-auto h-screen flex flex-col align-center justify-center"
+    >
+      <div class="flex flex-col w-full items-center justify-center bg-grey-lighter">
+        <label
+          class="w-64 flex flex-col items-center px-4 py-7 bg-white text-gray-500 rounded-lg shadow-lg tracking-wide uppercase border border-blue cursor-pointer hover:text-teal-800"
+        >
+          <img src="./assets/csv-file-icon.svg" width="32" />
+           <span class="mt-2 leading-normal">Select an csv</span> 
+           {{!-- <input id="btn" type="file" class="hidden" />  --}}
+           <input type="file" id="csv" name="csv" accept=".csv" class="hidden">
+
+        </label>
+          {{!-- <button type="button" id="btn" class="mt-2 leading-normal">Open a File</button> --}}
+          {{error}}
+      </div>
+
+    
+    <!-- Button -->
+        <div class="mt-6">
+          <button
+            id="gen_btn"
+            type="submit"
+            class="w-10 m-auto flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-teal-500 hover:bg-teal-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          >
+            Generate
+        </button>
+        </div>
+
+
+
+            {{#if results}}
+                  <table>
+                    <thead>
+                      <tr>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {{#each results as |row|}}
+                        <tr class="data" data="{{row._0}}">
+                          {{#each row as |value key|}}
+                            <td class="links_{{{@index}}}" id="{{@key}}" >{{value}}</td>
+                             {{!-- <h6 class="links_{{@index}}">{{}}</h6> --}}
+                          {{/each}}
+                        </tr>
+                      {{/each}}
+                    </tbody>
+                  </table>
+                {{/if}}
+
+      {{!-- <p class="text-white text-lg text-center font-mono mt-6"><strong>File: </strong><span id="filename"></span></p> --}}
+      <p class="text-white text-lg text-center font-mono mt-2 process_bar" style="display:none;" >
+        <strong>Processing... </strong><span id="output-path">
+        <div class="progress-bar process_bar" style="display:none;"></div>
+      </span></p>
+
+    </div>
+
+  </form>
+        
+
+  <main>
+
+
+
+
+    <footer>
+    <section class="mb-4 mt-3">
+        <div class="container">
+          <div class="row">
+
+            <input type="hidden" id="results-data" value="{{results}}">
+
+            <div class="col-sm-12 col-md-12 text-left">
+
+              {{#if results}}
+                  <table>
+                    <thead>
+                      <tr>
+                        {{!-- {{#each results.[0]}}
+                          <th>{{this}}</th>
+                        {{/each}} --}}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {{#each results as |row|}}
+                        <tr class="data" data="{{row._0}}">
+                          {{#each row as |value key|}}
+                            <td class="links_{{{@index}}}" id="{{@key}}" >{{value}}</td>
+                             {{!-- <h6 class="links_{{@index}}">{{}}</h6> --}}
+                          {{/each}}
+                        </tr>
+                      {{/each}}
+                    </tbody>
+                  </table>
+                {{/if}}
+
+            {{!-- {{filenames}} --}}
+            </div>
+          </div>
+        </div>
+        </section>
+      
+
+      
+      
+      
+      </footer>
+
+
+  </main>
+
+  <!--Popper 1.12.9 Script-->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" ></script>
+
+  <!--Bootstrap 4.0.0 JavaScript-->
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" ></script>
+
+ <script>
+    $(document).ready(function() {
+
+    const namelist = [];
+    const data = JSON.parse($('#results-data').val());
+    const progressBar = $('.progress-bar');
+    const gen_btn = $('#gen_btn');
+    const process_bar_html = $('.process_bar');
+    $.each(data, function(index, value){
+      if(index > 0){
+
+      namelist.push(value._0)
+      console.log(index, value._0);
+
+      var h6 = $(`<h6 id="${index}" >${value._0}</h6>`)
+      $('.show').append(h6);
+      }
+      
+    });
+
+   console.log('namelist =', namelist)
+
+    const linksdata = [];  
+    var links = $('.data');
+    var arrayCount = namelist.length;
+
+            var counter = 1;
+            var progresscounter = 0;
+            let progress = 0;
+            console.log(arrayCount)
+
+
+          var intervalId = setInterval(function() {
+
+            if (counter > arrayCount) {
+             
+
+              
+              clearInterval(intervalId);
+              console.log('counter = ' , counter)
+              return;
+            }
+
+          var postData = {
+            data: data[counter],
+            headers: data[0],
+            id: counter,
+          }
+
+          console.log(counter)
+
+           $.ajax({
+            url: '/create-html',
+            type: 'POST',
+            data: postData,
+            success: function(data) {
+            // Append the name value pairs to the data div
+
+            gen_btn.css({'display': 'none'});
+            process_bar_html.show();
+             progress = Math.ceil((progresscounter / arrayCount) * 100);
+             progressBar.css('width', progress + '%').text(progress + '%');
+             console.log('progress', counter/arrayCount, 'counter', counter, 'arrayCount', arrayCount)
+
+              if (progress === 100) {
+                progressBar.addClass('completed');
+              }
+            
+            console.log('data', data.id, data.pdfFileName, data)
+            //  $('#'+data.id).html(data.title+ ' (Done)' ).css({'color':'blue', 'font-size' : '20px'} );
+              $('#'+data.id).html( data.pdfFileName +' (created)' ).css({'color':'green'} );
+
+            }
+            });
+
+
+          counter++;
+          progresscounter++;
+          }, 3000);
+
+    });
+  </script>
+
+
+</body>
+</html>
