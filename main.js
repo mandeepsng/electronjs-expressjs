@@ -50,8 +50,8 @@ function createAboutWindow() {
 function createWindow() {
   mainWindow = new BrowserWindow(
     { 
-        width: 500, 
-        height: 350 
+        width: 700,
+        height: 450
     });
 
     // open dev tools
