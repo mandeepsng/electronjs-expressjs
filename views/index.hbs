@@ -70,6 +70,14 @@
           >
             Generate
         </button>
+
+        <Button 
+        href="/home"
+        style="display:none;"
+        id="refresh"
+        class="w-10 m-auto flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-teal-500 hover:bg-teal-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+        >Refresh</Button>
+
         </div>
 
 
@@ -168,6 +176,7 @@
     const data = JSON.parse($('#results-data').val());
     const progressBar = $('.progress-bar');
     const gen_btn = $('#gen_btn');
+    const refresh = $('#refresh');
     const process_bar_html = $('.process_bar');
     $.each(data, function(index, value){
       if(index > 0){
@@ -227,6 +236,7 @@
 
               if (progress === 100) {
                 progressBar.addClass('completed');
+                refresh.show();
               }
             
             console.log('data', data.id, data.pdfFileName, data)

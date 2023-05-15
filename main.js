@@ -1,4 +1,4 @@
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow, Menu } = require('electron');
 const express = require('express');
 const ejs = require('ejs');
 const path = require('path');
@@ -15,16 +15,47 @@ const upload = multer({ dest: 'uploads/' }).single('csv');
 
 
 let mainWindow;
+let aboutWindow;
+
+const menuTemplate = [  {    label: 'File',    submenu: [      { role: 'quit' }    ]
+  },
+  {
+    label: 'About',
+    click: () => {
+      // Create a new window when "About" is clicked
+      createAboutWindow()
+    }
+  }
+]
+
+const menu = Menu.buildFromTemplate(menuTemplate)
+Menu.setApplicationMenu(menu)
+
+
+
+
+function createAboutWindow() {
+  const aboutWindow = new BrowserWindow({
+    width: 700,
+    height: 450,
+    webPreferences: {
+      nodeIntegration: true
+    }
+  })
+
+  aboutWindow.loadFile('about.html')
+}
+
 
 function createWindow() {
   mainWindow = new BrowserWindow(
     { 
-        width: 1700, 
-        height: 700 
+        width: 500, 
+        height: 350 
     });
 
     // open dev tools
-    mainWindow.webContents.openDevTools()
+    // mainWindow.webContents.openDevTools()
 
   mainWindow.loadURL('http://localhost:3005');
 
@@ -62,6 +93,10 @@ expressApp.use(express.static(path.join(__dirname, 'public')));
     // The CSV file will be available at `csvFile.path`
   
     res.send(`File created: ${name}`);
+  });
+
+  expressApp.get('/home', (req, res) => {
+    res.redirect('/');
   });
 
 
