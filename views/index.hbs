@@ -101,9 +101,9 @@
                   </table>
                 {{/if}}
 
-      {{!-- <p class="text-white text-lg text-center font-mono mt-6"><strong>File: </strong><span id="filename"></span></p> --}}
+      <p class="text-white text-lg text-center font-mono mt-6 output_path" style="display:none;"><strong>Output Path: </strong><span id="filename">{{ output_path }}</span></p>
       <p class="text-white text-lg text-center font-mono mt-2 process_bar" style="display:none;" >
-        <strong>Processing... </strong><span id="output-path">
+        <strong id="processing_text">Processing... </strong><span id="output-path">
         <div class="progress-bar process_bar" style="display:none;"></div>
       </span></p>
 
@@ -177,7 +177,9 @@
     const progressBar = $('.progress-bar');
     const gen_btn = $('#gen_btn');
     const refresh = $('#refresh');
+    const output = $('.output_path');
     const process_bar_html = $('.process_bar');
+    const processing_text = $('#processing_text');
     $.each(data, function(index, value){
       if(index > 0){
 
@@ -237,6 +239,9 @@
               if (progress === 100) {
                 progressBar.addClass('completed');
                 refresh.show();
+                output.show();
+                processing_text.hide();
+                $('#filename').html(data.output_path)
               }
             
             console.log('data', data.id, data.pdfFileName, data)

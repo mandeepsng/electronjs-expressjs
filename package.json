@@ -1,7 +1,7 @@
 {
-  "name": "rvs",
-  "version": "1.0.0",
-  "description": "desktop application with nodejs",
+  "name": "rvsmedia",
+  "version": "2.0.0",
+  "description": "desktop application for generating salary slips",
   "main": "main.js",
   "scripts": {
     "postinstall": "electron-builder",

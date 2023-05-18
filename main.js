@@ -11,7 +11,8 @@ const csv = require('csv-parser');
 const upload = multer({ dest: 'uploads/' }).single('csv');
 
 
-
+const isDev = process.env.NODE_ENV !== 'production';
+const isMac = process.platform === 'darwin';
 
 
 let mainWindow;
@@ -50,13 +51,14 @@ function createAboutWindow() {
 function createWindow() {
   mainWindow = new BrowserWindow(
     { 
-        width: 700,
-        height: 450
+        width: 750,
+        height: 450,
     });
 
     // open dev tools
+    // if (isDev) {
     // mainWindow.webContents.openDevTools()
-
+    // }
   mainWindow.loadURL('http://localhost:3005');
 
   mainWindow.on('closed', function () {
@@ -155,7 +157,7 @@ expressApp.use(express.static(path.join(__dirname, 'public')));
   
         const resultsJSON = JSON.stringify(results);
 
-        res.render('index', { results: resultsJSON});
+        res.render('index', { results: resultsJSON, output_path : output_path,});
 
   
       });
@@ -224,6 +226,7 @@ expressApp.use(express.static(path.join(__dirname, 'public')));
   res.send({
     'pdfFileName' : pdfFileName,
     'id' : id,
+    'output_path': output_path,
   })
   
   });
@@ -235,14 +238,6 @@ expressApp.use(express.static(path.join(__dirname, 'public')));
       };
     
       res.render('index', data);
-  });
-
-  expressApp.get('/', (req, res) => {
-    const data = {
-      message: 'Hello from Express!'
-    };
-  
-    res.render('index', data);
   });
   
   expressApp.get('/about', (req, res) => {
@@ -282,6 +277,9 @@ expressApp.use(express.static(path.join(__dirname, 'public')));
   const downloadDir = app.getPath('downloads');
 
   console.log(`Folder "${folderName}" created successfully in "${downloadDir}"`);
+
+
+  const output_path = `${downloadDir}/${folderName}`;
   
   fs.mkdir(`${downloadDir}/${folderName}`, (err) => {
     if (err) {
